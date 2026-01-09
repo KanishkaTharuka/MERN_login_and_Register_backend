@@ -23,15 +23,15 @@ export async function createUser(req, res){
         console.log(lastUser);
         let uId = "UID36001";
         if(lastUser.length > 0){
-            const lastUserInString = lastUser[0].userId;
-            const lastUserWithoutPrefix = lastUserInString.replace("UID", "");
-            const lastUserInteger = parseInt(lastUserWithoutPrefix);
-            const newUserInteger = lastUserInteger + 1;
+            const lastUserInString = lastUser[0].userId;  //"UID36001"
+            const lastUserWithoutPrefix = lastUserInString.replace("UID", "");  //"36001"
+            const lastUserInteger = parseInt(lastUserWithoutPrefix);   //36001
+            const newUserInteger = lastUserInteger + 1; //36002
 
-            const newUserIntegerString = newUserInteger.toString();
-            const newUserString = "UID" + newUserIntegerString;
+            const newUserIntegerString = newUserInteger.toString(); //"36002"
+            const newUserString = "UID" + newUserIntegerString;  //"UID36002"
 
-            uId = newUserString;
+            uId = newUserString; //"UID36002"
         }
 
 
