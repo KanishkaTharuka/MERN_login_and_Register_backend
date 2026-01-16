@@ -8,12 +8,37 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export async function getAllUsers(req, res){
+    const sort = req.query.sort;
+    const filterRole = req.query.role;
+
+    let sortObject = {};
+    let filter = {};
+
+    if(filterRole == "user"){
+        filter = {role: "user"};
+    } 
+    if(filterRole == "admin"){
+        filter = {role: "admin"};
+    }
+    if(filterRole == ""){
+        filter = {};
+    }
+
+    if(sort === "name"){
+        sortObject = {name: 1};
+    }else if(sort === "date"){
+        sortObject = {date: -1};
+    }else if(sort === "city"){
+        sortObject = {city: 1};
+    }else{
+        sortObject = {}
+    }
+
     try {
-        
         if(req.user.role !== "admin"){
             return res.status(401).json({message: "Unauthorized"});
         }
-        const users = await User.find();
+        const users = await User.find(filter).sort(sortObject);
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({message: error.message});
@@ -231,7 +256,7 @@ export async function sendOTP(req, res){
 }
 
 //reset password using OTP
-export default async function resetPassword(req, res){
+export async function resetPassword(req, res){
     try{
         const email = req.body.email;
         const otp = req.body.otp;
@@ -256,6 +281,39 @@ export default async function resetPassword(req, res){
         res.status(200).json({message: "Password reset successfully"});
        
     }catch(error){
+        res.status(500).json({message: error.message});
+    }
+}
+
+// update user role by id
+export async function updateUserRole(req, res){
+    if(req.user.role !== "admin"){
+        return res.status(401).json({message: "Unauthorized"});
+    }
+    try{
+        const userId = req.params.id;
+        const newRole = req.body.role;
+
+        const user = await User.findOne({userId: userId});
+        if(!user){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        const updatedUser = await User.updateOne(
+            {
+                userId: userId
+            },
+            {role: newRole}
+        )
+        res.status(200).json(
+            {
+                message: "User role updated successfully",
+                user: updatedUser
+            }
+        );
+
+    }catch(error){
+
         res.status(500).json({message: error.message});
     }
 }
