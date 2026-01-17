@@ -148,7 +148,7 @@ export async function getUserById(req, res){
 // update user by id
 export async function updateUserById(req, res){
 
-    if(req.user == null){
+    if(req.user == null || req.user.role === "admin"){
         return res.status(401).json({message: "Unauthorized"});
     }
     try{
@@ -316,4 +316,14 @@ export async function updateUserRole(req, res){
 
         res.status(500).json({message: error.message});
     }
+}
+
+export function isAdmin(req){
+    if(req.user == null){
+        return false;
+    }
+    if(req.user.role !== "admin"){
+        return false;
+    }
+    return true;
 }
